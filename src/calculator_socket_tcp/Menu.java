@@ -2,8 +2,8 @@ package calculator_socket_tcp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.lang.reflect.Method;
 import java.util.Scanner;
 
 public class Menu {
@@ -13,10 +13,11 @@ public class Menu {
 	private final String STATUS_OK = "ok";
 	
 	public void start() {
-		System.out.println("Digite o host do servidor: ");
+		System.out.println("-> Digite o host do servidor: ");
 		this.host = this.scanner.nextLine();
-		System.out.println("Digite a porta do servidor: ");
-		this.port = this.scanner.nextInt();
+		System.out.println("-> Digite a porta do servidor: ");
+		this.port = Integer.parseInt(this.scanner.nextLine());
+		
 	}
 
 	public String getMessage(BufferedReader input, PrintStream output) throws IOException {
@@ -25,59 +26,45 @@ public class Menu {
 		if (response.equals(STATUS_OK))
 			return response;
 
-		System.out.println(response);
-		return null;
+		System.out.println("\n-> " + response);
+		return "";
 	}
 
-	public int getOperation(BufferedReader input, PrintStream output) throws IOException {
+	public Integer getOperation(BufferedReader input, PrintStream output) throws IOException {
 		String response = "";
-		int operation = 5;
+		String operation = "5";
 
 		while (!response.equals(STATUS_OK)) {
-			System.out.println("Selecione a operação que deseja executar:");
+			System.out.println("-> Selecione a operação que deseja executar:");
 			System.out.println("1 - Somar");
 			System.out.println("2 - Substrair");
 			System.out.println("3 - Multiplicar");
 			System.out.println("4 - Dividir");
 			System.out.println("5 - Sair");
-			operation = this.scanner.nextInt();
+			operation = this.scanner.nextLine();
 
-			if (operation == 5)
+			if (operation.equals("5"))
 				return 5;
 
 			output.println(operation);
 			response = getMessage(input, output);
 		}
 
-		return operation;
+		return Integer.valueOf(operation);
 	}
 
-	public double getFirstValue(BufferedReader input, PrintStream output) throws IOException {
+	public String getValue(String message, BufferedReader input, PrintStream output) throws IOException {
 		String response = "";
-		double firstValue = 0;
+		String value = "";
 
 		while (!response.equals(STATUS_OK)) {
-			System.out.print("Digite o primeiro número: ");
-			firstValue = this.scanner.nextDouble();
-			output.println(firstValue);
+			System.out.print("-> " + message);
+			value = this.scanner.nextLine();
+			output.println(value);
 			response = getMessage(input, output);
 		}
 
-		return firstValue;
-	}
-
-	public double getSecondValue(BufferedReader input, PrintStream output) throws IOException {
-		String response = "";
-		double secondValue = 0;
-
-		while (!response.equals(STATUS_OK)) {
-			System.out.print("Digite o segundo número: ");
-			secondValue = this.scanner.nextDouble();
-			output.println(secondValue);
-			response = getMessage(input, output);
-		}
-
-		return secondValue;
+		return value;
 	}
 
 }

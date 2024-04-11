@@ -3,7 +3,6 @@ package calculator_socket_tcp;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -13,7 +12,6 @@ public class Server {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		final int PORT = 4000;
-		final String STATUS_OK = "ok";
 
 		try (ServerSocket servidorSocket = new ServerSocket(PORT)) {
 			System.out.println("Iniciando socket na porta " + PORT);
@@ -26,20 +24,11 @@ public class Server {
 					PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
 
 					// Receiving mathematical operation
-					String x = input.readLine();
-					int operation = Integer.parseInt(x);
-					while (operation < 1 || operation > 4) {
-						output.println("Operação invalida, tente novamente.");
-						operation = Integer.parseInt(input.readLine());
-					}
-					output.println(STATUS_OK);
+					int operation = getOperation(input, output);
 
 					// Receiving values
-					double fistValue = Double.parseDouble(input.readLine());
-					output.println(STATUS_OK);
-
-					double secondValue = Double.parseDouble(input.readLine());
-					output.println(STATUS_OK);
+					double fistValue = getFirstValue(input, output);
+					double secondValue = getSecondValue(input, output, operation);
 
 					// Solving equation
 					double result = handleCalculation(operation, fistValue, secondValue);
@@ -58,7 +47,76 @@ public class Server {
 
 	}
 
-	private static double handleCalculation(int operation, double fistValue, double secondValue) {
+	static private int getOperation(BufferedReader input, PrintWriter output) {
+		while (true) {
+			try {
+				int operation = Integer.parseInt(input.readLine());
+				while (operation < 1 || operation > 4) {
+					output.println("Operação invalida, tente novamente.");
+					operation = Integer.parseInt(input.readLine());
+				}
+				output.println("ok");
+				return operation;
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				System.out.println("Erro: " + e.getMessage());
+				output.println("Operação invalida, tente novamente.");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				System.out.println("Erro: " + e.getMessage());
+				output.println("Operação invalida, tente novamente.");
+			}
+		}
+	}
+
+	static private double getFirstValue(BufferedReader input, PrintWriter output) {
+		while (true) {
+			try {
+				double value = Double.parseDouble(input.readLine());
+
+				output.println("ok");
+				return value;
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				System.out.println("Erro: " + e.getMessage());
+				output.println("Número inválido!");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				System.out.println("Erro: " + e.getMessage());
+				output.println("Número inválido!");
+			}
+		}
+	}
+
+	static private double getSecondValue(BufferedReader input, PrintWriter output, int operation) {
+		while (true) {
+			try {
+				double value = Double.parseDouble(input.readLine());
+
+				if (operation == 4 && value == 0) {
+					output.println("A divisão por zero não é permitida.");
+				} else {
+					output.println("ok");
+					return value;
+				}
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				System.out.println("Erro: " + e.getMessage());
+				output.println("Número inválido!");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				System.out.println("Erro: " + e.getMessage());
+				output.println("Número inválido!");
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				System.out.println("Erro: " + e.getMessage());
+				output.println(e.getMessage());
+			}
+
+		}
+	}
+
+	static private double handleCalculation(int operation, double fistValue, double secondValue) {
 		switch (operation) {
 		case 1:
 			return fistValue + secondValue;
