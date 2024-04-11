@@ -15,33 +15,24 @@ public class Client {
 
 		Menu menu = new Menu();
 		menu.start();
-		
+
 		while (true) {
 			try (Socket socket = new Socket(menu.host, menu.port)) {
 
 				BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				PrintStream output = new PrintStream(socket.getOutputStream(), true);
 
-				Integer operation = menu.getOperation();
+				Integer operation = menu.getOperation(input, output);
 				if (operation == 5) {
 					socket.close();
 					break;
 				}
 
-				while (operation < 1 || operation > 5) {
-					System.out.println("Operação invalida, tente novamente.");
-					operation = menu.getOperation();
-				}
-
-				double fistValue = menu.getFirtValue();
-				double secondValue = menu.getSecondValue();
-
-				output.println(operation);
-				output.println(fistValue);
-				output.println(secondValue);
+				menu.getFirstValue(input, output);
+				menu.getSecondValue(input, output);
 
 				double resultado = Float.parseFloat(input.readLine());
-				System.out.println("Resultado: " + resultado);
+				System.out.println("\n\nResultado: " + resultado + "\n");
 
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
