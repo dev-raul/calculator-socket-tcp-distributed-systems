@@ -18,6 +18,9 @@ public class Server {
 
 			while (true) {
 				try (Socket socket = servidorSocket.accept()) {
+					if (!socket.isConnected())
+						throw new Error();
+
 					System.out.println("Cliente conectado: " + socket.getInetAddress().getHostAddress());
 
 					BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -33,7 +36,7 @@ public class Server {
 					// Solving equation
 					double result = handleCalculation(operation, fistValue, secondValue);
 					output.println(result);
-
+					socket.close();
 				} catch (Exception e) {
 					// TODO: handle exception
 					System.out.println("Erro na conexão com o cliente: " + e.getMessage());
@@ -50,13 +53,16 @@ public class Server {
 	static private int getOperation(BufferedReader input, PrintWriter output) {
 		while (true) {
 			try {
-				int operation = Integer.parseInt(input.readLine());
-				while (operation < 1 || operation > 4) {
-					output.println("Operação invalida, tente novamente.");
-					operation = Integer.parseInt(input.readLine());
+				String dataRequest = input.readLine();
+				if (dataRequest != null && dataRequest != "") {
+					int operation = Integer.parseInt(dataRequest);
+					while (operation < 1 || operation > 4) {
+						output.println("Operação invalida, tente novamente.");
+						operation = Integer.parseInt(input.readLine());
+					}
+					output.println("ok");
+					return operation;
 				}
-				output.println("ok");
-				return operation;
 			} catch (NumberFormatException e) {
 				// TODO Auto-generated catch block
 				System.out.println("Erro: " + e.getMessage());
@@ -72,10 +78,14 @@ public class Server {
 	static private double getFirstValue(BufferedReader input, PrintWriter output) {
 		while (true) {
 			try {
-				double value = Double.parseDouble(input.readLine());
+				String dataRequest = input.readLine();
+				if (dataRequest != null && dataRequest != "") {
 
-				output.println("ok");
-				return value;
+					double value = Double.parseDouble(dataRequest);
+
+					output.println("ok");
+					return value;
+				}
 			} catch (NumberFormatException e) {
 				// TODO Auto-generated catch block
 				System.out.println("Erro: " + e.getMessage());
@@ -91,13 +101,16 @@ public class Server {
 	static private double getSecondValue(BufferedReader input, PrintWriter output, int operation) {
 		while (true) {
 			try {
-				double value = Double.parseDouble(input.readLine());
+				String dataRequest = input.readLine();
+				if (dataRequest != null && dataRequest != "") {
+					double value = Double.parseDouble(dataRequest);
 
-				if (operation == 4 && value == 0) {
-					output.println("A divisão por zero não é permitida.");
-				} else {
-					output.println("ok");
-					return value;
+					if (operation == 4 && value == 0) {
+						output.println("A divisão por zero não é permitida.");
+					} else {
+						output.println("ok");
+						return value;
+					}
 				}
 			} catch (NumberFormatException e) {
 				// TODO Auto-generated catch block

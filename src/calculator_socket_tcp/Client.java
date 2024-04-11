@@ -31,9 +31,11 @@ public class Client {
 
 				double resultado = Float.parseFloat(input.readLine());
 				System.out.println("\n\nResultado: " + resultado + "\n");
+				socket.close();
 			} catch (NumberFormatException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				break;
 			}
 
 		}
